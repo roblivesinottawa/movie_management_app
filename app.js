@@ -3,7 +3,8 @@ const http = require('http')
 const bodyParser = require('body-parser')
 const mysql = require('mysql')
 
-const PORT = process.env.PORT || 8000
+
+const PORT = process.env.PORT || 5000
 const app = express()
 
 app.use(bodyParser.json())
@@ -40,9 +41,16 @@ app.get('/movie/:id', (req, res) => {
 	connection.query(`SELECT * FROM movies WHERE id=?`, [req.params.id], (err, results, fields) => err ? err : res.end(JSON.stringify(results)))
 });
 
+app.post('/movie', (req, res) => {
+	connection.query(`INSERT INTO movies SET ?`, [req.body], (err, results, fields) => err ? err : res.end(JSON.stringify(results)))
+} )
 
+app.put('/movie', (req, res) => connection.query(`UPDATE movies SET movie_name=?, year_released=?, country=? WHERE id=?`, 
+[req.body.movie_name, req.body.year_released, req.body.country, req.body.id], 
+(err, results, fields) => err ? err : res.end(JSON.stringify(results))));
 
-
+app.delete('/movie', (req, res) => connection.query(`DELETE FROM  movies WHERE id=?`, 
+[req.body.id], (err, results, fields) => err ? err : res.end('RECORD HAS BEEN DELETED!')))
 
 
 app.listen(PORT, () => console.log(`Server listening at localhost:${PORT}`))
